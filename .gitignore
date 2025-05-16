@@ -1,0 +1,10 @@
+# exclude python packaging files
+/dist
+/MANIFEST
+/st13.egg-info
+
+# exclude pycache directory
+/__pycache__
+
+# exclude generated .pyc file
+/st13.pyc

@@ -8,8 +8,6 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 import mplfinance as mpf
-from scipy.signal import argrelextrema
-from datetime import datetime, timedelta
 
 def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timeframe='daily'):
     """
@@ -43,13 +41,12 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timefr
         title += " (Monthly)"
     
     # Ensure column names are exactly what mplfinance expects
-    # mplfinance is case-sensitive and expects specific column names
+    # mplfinance is case-sensitive and expects specific columns
     ohlc_data = df_clean[required_cols].copy()
     
-    # Create custom chart format and colour style
+    # Create custom chart format, colour, style and plot chart
     mc = mpf.make_marketcolors(up='g', down='r', inherit=True)
     s = mpf.make_mpf_style(marketcolors=mc, gridstyle='-', y_on_right=False)
-    
     fig, ax = mpf.plot(ohlc_data, 
                        type='candle',
                        style=s,
@@ -57,20 +54,14 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timefr
                        ylabel='',
                        volume=False,
                        datetime_format='%Y %b',
-                       xrotation=45,
-                       # hlines=dict(hlines=[10], colors=['red'], linestyle='-', linewidths=2),
-                       # alines=dict(alines=[(0, 10, len(ohlc_data) - 1, 30)],
-                       # colors=['red'],
-                       # linestyle='-',
-                       # linewidths=2,
-                       # alpha=0.8),
+                       xrotation=30,
                        returnfig=True,
                        figsize=(14, 8))
     
     # Set y-axis to log scale
     ax[0].set_yscale('log')
 
-    # Use custom formatting for better readability
+    # Custom y-axis for better readability
     price_range = (df_clean['Low'].min() * 0.9, df_clean['High'].max() * 1.1)
     format_log_axis_custom(ax[0], price_range)
 
@@ -96,6 +87,7 @@ def resample_to_weekly(df):
 def resample_to_monthly(df):
     """
     Convert daily OHLC data to monthly OHLC data
+    ME means month end as resampling parameter
     """
     monthly_data = df.resample('ME').agg({
         'Open': 'first',    # First open of the month
@@ -106,41 +98,6 @@ def resample_to_monthly(df):
     }).dropna()
     
     return monthly_data
-
-# Sample data generation function
-def generate_sample_data(start_price=100, days=100, volatility=0.02):
-    """
-    Generate sample OHLC data with realistic price movements
-    """
-    dates = pd.date_range(start=datetime.now() - timedelta(days=days), 
-                         periods=days, freq='D')
-    
-    # Generate random walk with drift
-    returns = np.random.normal(0.001, volatility, days)
-    prices = [start_price]
-    
-    for ret in returns[1:]:
-        prices.append(prices[-1] * (1 + ret))
-    
-    # Generate OHLC from prices
-    data = []
-    for i, price in enumerate(prices):
-        # Add some intraday volatility
-        high = price * (1 + abs(np.random.normal(0, 0.01)))
-        low = price * (1 - abs(np.random.normal(0, 0.01)))
-        open_price = prices[i-1] if i > 0 else price
-        close_price = price
-        volume = np.random.randint(1000000, 5000000)
-        
-        data.append({
-            'Open': open_price,
-            'High': max(high, open_price, close_price),
-            'Low': min(low, open_price, close_price),
-            'Close': close_price,
-            'Volume': volume
-        })
-    
-    return pd.DataFrame(data, index=dates)
 
 # Additional function for custom y-axis formatting
 def format_log_axis_custom(ax, price_range=None):
@@ -156,7 +113,7 @@ def format_log_axis_custom(ax, price_range=None):
         ymin, ymax = price_range
     
     # Create custom tick locations - use round numbers that make sense
-    # For stock prices, use: 1, 2, 5, 10, 20, 50, 100, 200, 500, etc.
+    # For stock prices, use: 1, 2, 5, 10, 20, 50, 60, 100, 200, 500, etc.
     possible_ticks = []
     
     # Generate sensible tick values
@@ -184,7 +141,7 @@ def format_log_axis_custom(ax, price_range=None):
     # Format tick labels to show actual values
     def price_formatter(x, pos):
         if x >= 1000:
-            return f'{x/1000:.0f}K'
+            return f'{x/1000:.0f}k'
         elif x >= 1:
             return f'{x:.0f}'
         else:
@@ -193,14 +150,12 @@ def format_log_axis_custom(ax, price_range=None):
     ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
     
     return ax
-
-
+    
 if __name__ == "__main__":
     try:
-        # Option 1: Use real data from Yahoo Finance
-        # Download real stock data
-        ticker = "DB"  # Change to any stock symbol
-        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-15")
+        # Download price data from Yahoo Finance
+        ticker = "AAPL"  # Change to any asset symbol
+        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-18")
         
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them
@@ -215,14 +170,11 @@ if __name__ == "__main__":
         df = df_real
 
     except Exception as e:
-        # Option 2: Use generated sample data
-        print(f"Error downloading real data: {e}")
-        print("Using generated sample data")
-        df = generate_sample_data(start_price=50, days=500, volatility=0.03)  # More days for weekly
+        raise ValueError(f"Error downloading {ticker} price data from Yahoo Finance")
 
-    # 3. mplfinance Weekly Chart (requires: pip install mplfinance)
     try:
-        fig3 = mplfinance_candlestick_log(df.copy(), "Price History", timeframe='monthly')
+        # plot with mplfinance (requires: pip install mplfinance)
+        fig = mplfinance_candlestick_log(df.copy(), "Price History", timeframe='monthly')
 
         plt.show()
         
@@ -230,4 +182,4 @@ if __name__ == "__main__":
         print("mplfinance not installed. Run: pip install mplfinance")
     except Exception as e:
         print(f"Error with mplfinance: {e}")
-        print("Skipping mplfinance chart...")
+

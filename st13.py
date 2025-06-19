@@ -3,7 +3,6 @@
 # https://github.com/street13capital/st13/blob/main/LICENSE
 __version__ = '0.3.0'
 
-import numpy as np
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
@@ -35,10 +34,10 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timefr
     # Resample data to weekly or monthly if requested
     if timeframe.lower() == 'weekly':
         df_clean = resample_to_weekly(df_clean)
-        title += " (Weekly)"
+        title += " weekly chart"
     elif timeframe.lower() == 'monthly':
         df_clean = resample_to_monthly(df_clean)
-        title += " (Monthly)"
+        title += " monthly chart"
     
     # Ensure column names are exactly what mplfinance expects
     # mplfinance is case-sensitive and expects specific columns
@@ -55,6 +54,8 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timefr
                        volume=False,
                        datetime_format='%Y %b',
                        xrotation=30,
+                       # hlines=dict(hlines=[195], colors=['orange'], linestyle='-', linewidths=1),
+                       alines=dict(alines=[[('2020-08-30', 130),('2025-06-30', 258)], [('2020-08-30', 99),('2025-06-30', 197)]], colors=['blue'], linestyle='-', linewidths=1),
                        returnfig=True,
                        figsize=(14, 8))
     
@@ -124,7 +125,7 @@ def format_log_axis_custom(ax, price_range=None):
                 possible_ticks.append(tick_val)
     
     # Add some intermediate values if needed
-    for val in [1.5, 3, 6, 7, 15, 30, 70, 150, 300, 700, 1500]:
+    for val in [1.5, 3, 6, 7, 15, 30, 60, 70, 150, 300, 700, 1500]:
         if ymin <= val <= ymax:
             possible_ticks.append(val)
     
@@ -174,7 +175,7 @@ if __name__ == "__main__":
 
     try:
         # plot with mplfinance (requires: pip install mplfinance)
-        fig = mplfinance_candlestick_log(df.copy(), "Price History", timeframe='monthly')
+        fig = mplfinance_candlestick_log(df.copy(), ticker, timeframe='monthly')
 
         plt.show()
         

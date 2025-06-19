@@ -2,8 +2,12 @@ from setuptools import setup
 
 setup(
     name='st13',
-    version='0.3.0',
+    version='0.5.0',
     py_modules=['st13'],
+    install_requires=['yfinance>=0.2.63',
+                      'matplotlib>=3.10.3',
+                      'matplotlib-inline>=0.1.7',
+                      'mplfinance>=0.12.10b0'],
     author='Ken Soh',
     license='MIT License',
     url='https://github.com/street13capital/st13',
@@ -11,7 +15,7 @@ setup(
     long_description='Python package for trend analysis using technical analysis of price behaviour around trend lines',
     long_description_content_type='text/markdown',
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',

@@ -5,9 +5,9 @@ This is still in Pre-Alpha, the framework for downloading data, plotting log cha
 
 Next up is coding in the turning points detection to draw the dominant trendline(s).
 
-To see a sample plot now, install the Python st13 package and run it with
+To see a sample plot now, install the latest st13 package and run it with
 
 ```
-pip3 install st13
+pip3 install st13 --upgrade
 python3 -m st13
 ```

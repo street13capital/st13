@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='st13',
-    version='0.5.0',
+    version='0.5.1',
     py_modules=['st13'],
     install_requires=['yfinance>=0.2.63',
                       'matplotlib>=3.10.3',

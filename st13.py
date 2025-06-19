@@ -156,7 +156,7 @@ if __name__ == "__main__":
     try:
         # Download price data from Yahoo Finance
         ticker = "AAPL"  # Change to any asset symbol
-        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-18")
+        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-18", auto_adjust=True)
         
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them

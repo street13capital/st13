@@ -2,9 +2,10 @@ from setuptools import setup
 
 setup(
     name='st13',
-    version='0.5.1',
+    version='0.5.2',
     py_modules=['st13'],
-    install_requires=['yfinance>=0.2.63',
+    install_requires=['pandas>=2.3.0',
+                      'yfinance>=0.2.63',
                       'matplotlib>=3.10.3',
                       'matplotlib-inline>=0.1.7',
                       'mplfinance>=0.12.10b0'],

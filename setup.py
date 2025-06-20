@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='st13',
-    version='0.5.3',
+    version='0.5.4',
     py_modules=['st13'],
     install_requires=['pandas',
                       'yfinance',
@@ -31,5 +31,5 @@ setup(
         'Topic :: Office/Business :: Financial :: Investment',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    keywords=['finance','candlestick','ohlc','market','investing','technical analysis']
+    keywords=['finance', 'candlestick', 'ohlc', 'investing', 'technical analysis']
 )

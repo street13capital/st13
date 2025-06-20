@@ -5,7 +5,7 @@ This is still in Pre-Alpha, the framework for downloading data, plotting log cha
 
 Next up is coding in the turning points detection to draw the dominant trendline(s).
 
-To see a sample hardcoded plot of Apple now, install st13 package and run it with
+To see a sample hardcoded plot of Apple, install st13 package and run it with
 
 ```python
 pip3 install st13 --upgrade

@@ -1,20 +1,23 @@
 from setuptools import setup
 
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(
     name='st13',
-    version='0.5.2',
+    version='0.5.3',
     py_modules=['st13'],
-    install_requires=['pandas>=2.3.0',
-                      'yfinance>=0.2.63',
-                      'matplotlib>=3.10.3',
-                      'matplotlib-inline>=0.1.7',
-                      'mplfinance>=0.12.10b0'],
+    install_requires=['pandas',
+                      'yfinance',
+                      'matplotlib',
+                      'matplotlib-inline',
+                      'mplfinance'],
     author='Ken Soh',
     license='MIT License',
     url='https://github.com/street13capital/st13',
-    description='Python package for trend analysis',
-    long_description='Python package for trend analysis using technical analysis of price behaviour around trend lines',
-    long_description_content_type='text/markdown',
+    description='Python package for trend analysis using technical analysis of price behaviour around trend lines',
+    long_description=long_description,
+    long_description_content_type='text/markdown; charset=UTF-8',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3',
@@ -27,5 +30,6 @@ setup(
         'Operating System :: Microsoft :: Windows',
         'Topic :: Office/Business :: Financial :: Investment',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    ]
+    ],
+    keywords=['finance','candlestick','ohlc','market','investing','technical analysis']
 )

@@ -1,14 +1,14 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2025 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.5.5'
+__version__ = '0.6.0'
 
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 
-def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timeframe='daily'):
+def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timeframe='daily'):
     """
     Create a candlestick chart with log scale using mplfinance
     timeframe: 'daily', 'weekly', 'monthly'
@@ -38,11 +38,91 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timefr
     elif timeframe.lower() == 'monthly':
         df_clean = resample_to_monthly(df_clean)
         title += " monthly chart"
+
+    # define number of trendlines to draw to focus on dominant lines
+    lines_to_draw = 3
     
+    # window to check for local minima and maxima, must be odd number
+    reversal_window = 5
+    
+    # threshold to consider reversal point as part of the same line
+    noise_threshold = 0.05
+    
+    # lists to store the reversal points
+    bottoming_points = []
+    topping_points = []
+    
+    # list of predefined window size
+    previous_points = []
+    
+    for index, row in df_clean.iterrows():
+        # append new point to the consideration window
+        previous_points.append([index, row['Close']])
+    
+        # maintain window size by removing oldest point
+        if len(previous_points) > reversal_window:
+            previous_points.pop(0)
+    
+        # only start checking when window is populated
+        if len(previous_points) >= reversal_window:
+            topping_point = True
+            bottoming_point = True
+            starting_position = ((reversal_window - 1) // 2)
+            for n in range(reversal_window):
+                if previous_points[n][1] > previous_points[starting_position][1]:
+                    topping_point = False
+                if previous_points[n][1] < previous_points[starting_position][1]:
+                    bottoming_point = False
+            if topping_point:
+                topping_points.append([previous_points[starting_position][0], previous_points[starting_position][1]])
+            if bottoming_point:
+                bottoming_points.append([previous_points[starting_position][0], previous_points[starting_position][1]])
+    
+    reversal_points = topping_points + bottoming_points
+    weighted_reversal_points = []
+    
+    for n in range(len(reversal_points)):
+        reference_weight = 0
+        reference_value = reversal_points[n][1]
+        for m in range(len(reversal_points)):
+            if (abs(reference_value - reversal_points[m][1])/reference_value) <= noise_threshold:
+                reference_weight += 1
+        weighted_reversal_points.append([reference_value, reference_weight])
+    
+    weighted_reversal_points.sort(key=lambda x: x[1], reverse=True)
+    
+    lines_already_drawn = 0
+    lines_coefficients = []
+    
+    for n in range(len(weighted_reversal_points)):
+        reversal_clusters = []
+        # stop if there is only 1 reversal point for line
+        if weighted_reversal_points[n][1] == 1:
+            break
+        reference_value = weighted_reversal_points[n][0]
+        for m in range(len(weighted_reversal_points)):
+            if (abs(reference_value - weighted_reversal_points[m][0])/reference_value) <= noise_threshold:
+                reversal_clusters.append(weighted_reversal_points[m][0])
+        cluster_best_value = linear_regression_line(reversal_clusters)
+        if len(lines_coefficients) == 0:
+            lines_coefficients.append(cluster_best_value)
+            lines_already_drawn += 1
+        else:
+            line_already_exists = False
+            for o in range(len(lines_coefficients)):
+                if (abs(cluster_best_value - lines_coefficients[o])/cluster_best_value) <= 2 * noise_threshold:
+                    line_already_exists = True
+            if not line_already_exists:
+                lines_coefficients.append(cluster_best_value)    
+                lines_already_drawn += 1
+    
+        if lines_already_drawn == lines_to_draw:
+            break
+
     # Ensure column names are exactly what mplfinance expects
     # mplfinance is case-sensitive and expects specific columns
     ohlc_data = df_clean[required_cols].copy()
-    
+
     # Create custom chart format, colour, style and plot chart
     mc = mpf.make_marketcolors(up='g', down='r', inherit=True)
     s = mpf.make_mpf_style(marketcolors=mc, gridstyle='-', y_on_right=False)
@@ -54,8 +134,8 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (Log Scale)", timefr
                        volume=False,
                        datetime_format='%Y %b',
                        xrotation=30,
-                       # hlines=dict(hlines=[195], colors=['orange'], linestyle='-', linewidths=1),
-                       alines=dict(alines=[[('2020-08-30', 130),('2025-06-30', 258)], [('2020-08-30', 99),('2025-06-30', 197)]], colors=['blue'], linestyle='-', linewidths=1),
+                       hlines=dict(hlines=lines_coefficients, colors=['orange'], linestyle='-', linewidths=1),
+                       # alines=dict(alines=[[('2020-08-30', 130),('2025-06-30', 258)], [('2020-08-30', 99),('2025-06-30', 197)]], colors=['blue'], linestyle='-', linewidths=1),
                        returnfig=True,
                        figsize=(14, 8))
     
@@ -114,7 +194,6 @@ def format_log_axis_custom(ax, price_range=None):
         ymin, ymax = price_range
     
     # Create custom tick locations - use round numbers that make sense
-    # For stock prices, use: 1, 2, 5, 10, 20, 50, 60, 100, 200, 500, etc.
     possible_ticks = []
     
     # Generate sensible tick values
@@ -151,12 +230,26 @@ def format_log_axis_custom(ax, price_range=None):
     ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
     
     return ax
-    
+
+# take list of points and find best fit
+def linear_regression_line(clusters):
+    best_value = 0
+    lowest_error = 999999999
+    for n in range(len(clusters)):
+        error_value = 0
+        reference_value = clusters[n]
+        for m in range(len(clusters)):
+            error_value += (reference_value - clusters[m]) ** 2
+        if error_value < lowest_error:
+            lowest_error = error_value
+            best_value = reference_value
+    return best_value
+
 if __name__ == "__main__":
     try:
         # Download price data from Yahoo Finance
         ticker = "AAPL"  # Change to any asset symbol
-        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-18", auto_adjust=True)
+        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-21", auto_adjust=True)
         
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them

@@ -7,6 +7,7 @@ import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
 import mplfinance as mpf
+import sys
 
 def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timeframe='daily'):
     """
@@ -194,6 +195,7 @@ def format_log_axis_custom(ax, price_range=None):
         ymin, ymax = price_range
     
     # Create custom tick locations - use round numbers that make sense
+    # For stock prices, use: 1, 2, 5, 10, 20, 50, 100, 200, 500, etc.
     possible_ticks = []
     
     # Generate sensible tick values
@@ -247,8 +249,14 @@ def linear_regression_line(clusters):
 
 if __name__ == "__main__":
     try:
+        if len(sys.argv) > 1:
+            # take in asset symbol on Yahoo Finance
+            ticker = sys.argv[1]
+        else:
+            # default to Apple for demonstration
+            ticker = "AAPL"
+
         # Download price data from Yahoo Finance
-        ticker = "AAPL"  # Change to any asset symbol
         df_real = yf.download(ticker, start="2020-01-01", end="2025-06-21", auto_adjust=True)
         
         # Clean the data from yfinance

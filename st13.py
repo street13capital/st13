@@ -259,7 +259,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # Ensure column names are exactly what mplfinance expects
     # mplfinance is case-sensitive and expects specific columns
     ohlc_data = df_clean[required_cols].copy()
-    
+
     # Create custom chart format, colour, style and plot chart
     mc = mpf.make_marketcolors(up='g', down='r', inherit=True)
     s = mpf.make_mpf_style(marketcolors=mc, gridstyle='-', y_on_right=False)
@@ -279,7 +279,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     
     # Set y-axis to log scale
     ax[0].set_yscale('log')
-    
+
     # Custom y-axis for better readability
     price_range = (df_clean['Low'].min() * 0.9, df_clean['High'].max() * 1.1)
     format_log_axis_custom(ax[0], price_range)

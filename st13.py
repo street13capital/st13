@@ -41,6 +41,22 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         df_clean = resample_to_monthly(df_clean)
         title += " monthly chart"
 
+    asset_average_return = 0
+    previous_period_value = None
+    for index, row in df_clean.iterrows():
+        if previous_period_value:
+            asset_average_return += (row['Close'] - previous_period_value) / previous_period_value
+        previous_period_value = row['Close']
+    asset_average_return = asset_average_return / (len(df_clean) - 1)
+    
+    squared_return_variance = 0
+    previous_period_value = None
+    for index, row in df_clean.iterrows():
+        if previous_period_value:
+            squared_return_variance += (asset_average_return - ((row['Close'] - previous_period_value) / previous_period_value)) ** 2
+        previous_period_value = row['Close']
+    asset_standard_deviation = (squared_return_variance / (len(df_clean) - 1)) ** 0.5
+
     # # # # # draw sloping lines
     
     # define number of trendlines to draw to focus on dominant lines
@@ -50,7 +66,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     reversal_window = 5
     
     # threshold to consider reversal point as part of the same line
-    noise_threshold = 0.1
+    noise_threshold = asset_standard_deviation
     
     # lists to store the reversal points
     bottoming_points = []
@@ -181,7 +197,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     reversal_window = 5
     
     # threshold to consider reversal point as part of the same line
-    noise_threshold = 0.10
+    noise_threshold = asset_standard_deviation
     
     # lists to store the reversal points
     bottoming_points = []

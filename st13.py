@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2025 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.7.2'
+__version__ = '0.7.3'
 
 import pandas as pd
 import yfinance as yf
@@ -60,10 +60,13 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # # # # # draw sloping lines
     
     # define number of trendlines to draw to focus on dominant lines
-    lines_to_draw = 4
+    lines_to_draw = 3
     
     # window to check for local minima and maxima, must be odd number
     reversal_window = 3
+
+    # constant to multiply noise_threshold for grouping of lines
+    lines_grouping_multiplier = 1.5
     
     # threshold to consider reversal point as part of the same line
     noise_threshold = asset_standard_deviation
@@ -148,7 +151,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         reference_constant_m = weighted_reversal_points[n][5]
         reference_constant_b = weighted_reversal_points[n][6]
         for m in range(len(weighted_reversal_points)):
-            if ((abs(10 ** reference_constant_m - 10 ** weighted_reversal_points[m][5]) / 10 ** reference_constant_m) <= 1.5 * noise_threshold) and ((abs(10 ** reference_constant_b - 10 ** weighted_reversal_points[m][6]) / 10 ** reference_constant_b) <= 1.5 * noise_threshold):
+            if ((abs(10 ** reference_constant_m - 10 ** weighted_reversal_points[m][5]) / 10 ** reference_constant_m) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 ** weighted_reversal_points[m][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
                 reversal_clusters.append(weighted_reversal_points[m])
         reversal_clusters.sort(key=lambda x: x[0], reverse=True)
         cluster_best_weight = reversal_clusters[0][0]
@@ -168,7 +171,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
             reference_constant_m = cluster_best_line[5]
             reference_constant_b = cluster_best_line[6]
             for o in range(len(lines_coefficients)):
-                if ((abs(10 ** reference_constant_m - 10 ** lines_coefficients[o][5]) / 10 ** reference_constant_m) <= 1.5 * noise_threshold) and ((abs(10 ** reference_constant_b - 10 **lines_coefficients[o][6]) / 10 ** reference_constant_b) <= 1.5 * noise_threshold):
+                if ((abs(10 ** reference_constant_m - 10 ** lines_coefficients[o][5]) / 10 ** reference_constant_m) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 **lines_coefficients[o][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
                     line_already_exists = True
             if not line_already_exists:
                 lines_coefficients.append(cluster_best_line)    
@@ -189,15 +192,6 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         lines_coefficients_formatted.append([(zero_day_date, start_point_value), (last_day_date,end_point_value)])
     
     # # # # # draw horizontal lines
-    
-    # define number of trendlines to draw to focus on dominant lines
-    lines_to_draw = 4
-    
-    # window to check for local minima and maxima, must be odd number
-    reversal_window = 3
-    
-    # threshold to consider reversal point as part of the same line
-    noise_threshold = asset_standard_deviation
     
     # lists to store the reversal points
     bottoming_points = []
@@ -252,7 +246,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
             break
         reference_value = weighted_reversal_points[n][0]
         for m in range(len(weighted_reversal_points)):
-            if (abs(reference_value - weighted_reversal_points[m][0])/reference_value) <= 1.5 * noise_threshold:
+            if (abs(reference_value - weighted_reversal_points[m][0])/reference_value) <= lines_grouping_multiplier * noise_threshold:
                 reversal_clusters.append(weighted_reversal_points[m][0])
         cluster_best_value = linear_regression_line(reversal_clusters)
         if len(lines_coefficients) == 0:
@@ -261,7 +255,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         else:
             line_already_exists = False
             for o in range(len(lines_coefficients)):
-                if (abs(cluster_best_value - lines_coefficients[o])/cluster_best_value) <= 1.5 * noise_threshold:
+                if (abs(cluster_best_value - lines_coefficients[o])/cluster_best_value) <= lines_grouping_multiplier * noise_threshold:
                     line_already_exists = True
             if not line_already_exists:
                 lines_coefficients.append(cluster_best_value)    
@@ -284,7 +278,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         
         shortlisted_lines_coefficients = []
         shortlisted_lines_coefficients_formatted = []
-        for n in range(4):
+        for n in range(lines_to_draw):
             if (n + 1) > len(combined_coefficients):
                 break
             if combined_coefficients[n][1] == 'horizontal':

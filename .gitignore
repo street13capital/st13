@@ -8,3 +8,5 @@
 
 # exclude generated .pyc file
 /st13.pyc
+
+.DS_Store

@@ -63,7 +63,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     lines_to_draw = 2
     
     # window to check for local minima and maxima, must be odd number
-    reversal_window = 5
+    reversal_window = 3
     
     # threshold to consider reversal point as part of the same line
     noise_threshold = asset_standard_deviation
@@ -194,7 +194,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     lines_to_draw = 2
     
     # window to check for local minima and maxima, must be odd number
-    reversal_window = 5
+    reversal_window = 3
     
     # threshold to consider reversal point as part of the same line
     noise_threshold = asset_standard_deviation

@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2025 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.7.3'
+__version__ = '0.7.4'
 
 import pandas as pd
 import yfinance as yf
@@ -106,7 +106,8 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # set the date for day zero and last day
     zero_day_date = df_clean.head(1).index[0]
     last_day_date = df_clean.tail(1).index[0]
-    
+    total_chart_days = (last_day_date - zero_day_date).days
+
     for p in range(2):
         if p == 0:
             turning_points = topping_points
@@ -151,7 +152,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         reference_constant_m = weighted_reversal_points[n][5]
         reference_constant_b = weighted_reversal_points[n][6]
         for m in range(len(weighted_reversal_points)):
-            if ((abs(10 ** reference_constant_m - 10 ** weighted_reversal_points[m][5]) / 10 ** reference_constant_m) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 ** weighted_reversal_points[m][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
+            if ((abs(10 ** (reference_constant_m * total_chart_days) - 10 ** (weighted_reversal_points[m][5] * total_chart_days)) / 10 ** (reference_constant_m * total_chart_days)) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 ** weighted_reversal_points[m][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
                 reversal_clusters.append(weighted_reversal_points[m])
         reversal_clusters.sort(key=lambda x: x[0], reverse=True)
         cluster_best_weight = reversal_clusters[0][0]
@@ -171,7 +172,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
             reference_constant_m = cluster_best_line[5]
             reference_constant_b = cluster_best_line[6]
             for o in range(len(lines_coefficients)):
-                if ((abs(10 ** reference_constant_m - 10 ** lines_coefficients[o][5]) / 10 ** reference_constant_m) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 ** lines_coefficients[o][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
+                if ((abs(10 ** (reference_constant_m * total_chart_days) - 10 ** (lines_coefficients[o][5] * total_chart_days)) / 10 ** (reference_constant_m * total_chart_days)) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 **lines_coefficients[o][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
                     line_already_exists = True
             if not line_already_exists:
                 lines_coefficients.append(cluster_best_line)    
@@ -185,7 +186,6 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     for n in range(len(lines_coefficients)):
         line_constant_m = lines_coefficients[n][5]
         line_constant_b = lines_coefficients[n][6]
-        total_chart_days = (last_day_date - zero_day_date).days
         start_point_value = 10 ** (line_constant_m * 0 + line_constant_b)
         end_point_value = 10 ** (line_constant_m * total_chart_days + line_constant_b)
         # lines_coefficients_formatted.append([(str(lines_coefficients[n][1]).split()[0], lines_coefficients[n][2]), (str(lines_coefficients[n][3]).split()[0], lines_coefficients[n][4])])
@@ -427,7 +427,6 @@ if __name__ == "__main__":
 
         # Download price data from Yahoo Finance
         df_real = yf.download(ticker, start="2020-01-01", end="2025-06-21", auto_adjust=True)
-        
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them
         if isinstance(df_real.columns, pd.MultiIndex):

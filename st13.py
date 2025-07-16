@@ -171,7 +171,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
             reference_constant_m = cluster_best_line[5]
             reference_constant_b = cluster_best_line[6]
             for o in range(len(lines_coefficients)):
-                if ((abs(10 ** reference_constant_m - 10 ** lines_coefficients[o][5]) / 10 ** reference_constant_m) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 **lines_coefficients[o][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
+                if ((abs(10 ** reference_constant_m - 10 ** lines_coefficients[o][5]) / 10 ** reference_constant_m) <= lines_grouping_multiplier * noise_threshold) and ((abs(10 ** reference_constant_b - 10 ** lines_coefficients[o][6]) / 10 ** reference_constant_b) <= lines_grouping_multiplier * noise_threshold):
                     line_already_exists = True
             if not line_already_exists:
                 lines_coefficients.append(cluster_best_line)    

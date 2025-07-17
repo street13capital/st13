@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2025 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.7.4'
+__version__ = '0.7.5'
 
 import pandas as pd
 import yfinance as yf
@@ -63,10 +63,10 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     lines_to_draw = 3
     
     # window to check for local minima and maxima, must be odd number
-    reversal_window = 3
+    reversal_window = 5
 
     # constant to multiply noise_threshold for grouping of lines
-    lines_grouping_multiplier = 1.5
+    lines_grouping_multiplier = 3
     
     # threshold to consider reversal point as part of the same line
     noise_threshold = asset_standard_deviation
@@ -405,7 +405,7 @@ def format_log_axis_custom(ax, price_range=None):
 # take list of points and find best fit
 def linear_regression_line(clusters):
     best_value = 0
-    lowest_error = 999999999
+    lowest_error = float('inf')
     for n in range(len(clusters)):
         error_value = 0
         reference_value = clusters[n]
@@ -426,7 +426,7 @@ if __name__ == "__main__":
             ticker = "AAPL"
 
         # Download price data from Yahoo Finance
-        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-21", auto_adjust=True)
+        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-30", auto_adjust=True)
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them
         if isinstance(df_real.columns, pd.MultiIndex):

@@ -264,27 +264,27 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         if lines_already_drawn == lines_to_draw:
             break
 
-        latest_period_price = df_clean.iloc[-1]['Close']
-        combined_coefficients = []
-        n = 0
-        for c in lines_coefficients:
-            combined_coefficients.append([abs(latest_period_price - c), 'horizontal', n])
-            n += 1
-        n = 0    
-        for c in lines_coefficients_formatted:
-            combined_coefficients.append([abs(latest_period_price - c[1][1]), 'sloping', n])
-            n += 1
-        combined_coefficients.sort(key=lambda x: x[0], reverse=False)
-        
-        shortlisted_lines_coefficients = []
-        shortlisted_lines_coefficients_formatted = []
-        for n in range(lines_to_draw):
-            if (n + 1) > len(combined_coefficients):
-                break
-            if combined_coefficients[n][1] == 'horizontal':
-                shortlisted_lines_coefficients.append(lines_coefficients[combined_coefficients[n][2]])
-            elif combined_coefficients[n][1] == 'sloping':
-                shortlisted_lines_coefficients_formatted.append(lines_coefficients_formatted[combined_coefficients[n][2]])    
+    latest_period_price = df_clean.iloc[-1]['Close']
+    combined_coefficients = []
+    n = 0
+    for c in lines_coefficients:
+        combined_coefficients.append([abs(latest_period_price - c), 'horizontal', n])
+        n += 1
+    n = 0    
+    for c in lines_coefficients_formatted:
+        combined_coefficients.append([abs(latest_period_price - c[1][1]), 'sloping', n])
+        n += 1
+    combined_coefficients.sort(key=lambda x: x[0], reverse=False)
+    
+    shortlisted_lines_coefficients = []
+    shortlisted_lines_coefficients_formatted = []
+    for n in range(lines_to_draw + 1):
+        if (n + 1) > len(combined_coefficients):
+            break
+        if combined_coefficients[n][1] == 'horizontal':
+            shortlisted_lines_coefficients.append(lines_coefficients[combined_coefficients[n][2]])
+        elif combined_coefficients[n][1] == 'sloping':
+            shortlisted_lines_coefficients_formatted.append(lines_coefficients_formatted[combined_coefficients[n][2]])
 
     # # # # #
 

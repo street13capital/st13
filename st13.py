@@ -278,7 +278,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     
     shortlisted_lines_coefficients = []
     shortlisted_lines_coefficients_formatted = []
-    for n in range(lines_to_draw + 1):
+    for n in range(lines_to_draw):
         if (n + 1) > len(combined_coefficients):
             break
         if combined_coefficients[n][1] == 'horizontal':

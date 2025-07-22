@@ -189,7 +189,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         start_point_value = 10 ** (line_constant_m * 0 + line_constant_b)
         end_point_value = 10 ** (line_constant_m * total_chart_days + line_constant_b)
         # lines_coefficients_formatted.append([(str(lines_coefficients[n][1]).split()[0], lines_coefficients[n][2]), (str(lines_coefficients[n][3]).split()[0], lines_coefficients[n][4])])
-        lines_coefficients_formatted.append([(zero_day_date, start_point_value), (last_day_date,end_point_value)])
+        lines_coefficients_formatted.append([(zero_day_date, start_point_value), (last_day_date, end_point_value)])
     
     # # # # # draw horizontal lines
     

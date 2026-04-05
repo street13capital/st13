@@ -1,7 +1,11 @@
 # st13 📉📈
 Python package for trend analysis using technical analysis of price behaviour around trend lines.
 
-***IMPORTANT - This project has been deprecated.*** It is still in Pre-Alpha, the framework for downloading data, plotting log chart with trendlines is done. Next up is improving the trendlines detection and plotting, before coding in price behaviour analysis. However, I realise that identifying the best trendline has more nuances than what I could code in mathematically using formulas. I would think that having this package would give misleading analysis and cause more harm than benefit. Thus I've shelved this project.
+***IMPORTANT - This project has been deprecated.***
+
+It is still in Pre-Alpha, the framework for downloading data, plotting log chart with trendlines is done. Next up is improving the trendlines detection and plotting, before coding in price behaviour analysis.
+
+However, I realise that identifying the best trendline has more nuances than what I could code in mathematically using formulas. I would think that having this package would give misleading analysis and cause more harm than benefit. Thus I've shelved this project.
 
 To install the latest version of st13 Python package
 

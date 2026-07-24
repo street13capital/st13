@@ -57,19 +57,25 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         previous_period_value = row['Close']
     asset_standard_deviation = (squared_return_variance / (len(df_clean) - 1)) ** 0.5
 
-    # # # # # draw sloping lines
-    
-    # define number of trendlines to draw to focus on dominant lines
-    lines_to_draw = 3
-    
+    # maximum number of trendlines to draw to focus on dominant lines
+    lines_to_draw = 21
+        
     # window to check for local minima and maxima, must be odd number
-    reversal_window = 5
+    reversal_window = 3
 
     # constant to multiply noise_threshold for grouping of lines
     lines_grouping_multiplier = 3
-    
+
     # threshold to consider reversal point as part of the same line
     noise_threshold = asset_standard_deviation
+
+    # list used by deprecated sloping lines algorithm
+    lines_coefficients_formatted = []
+
+    """
+    # start comment away sloping lines, not reliable to do it using code
+
+    # # # # # draw sloping lines
     
     # lists to store the reversal points
     bottoming_points = []
@@ -190,6 +196,9 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         end_point_value = 10 ** (line_constant_m * total_chart_days + line_constant_b)
         # lines_coefficients_formatted.append([(str(lines_coefficients[n][1]).split()[0], lines_coefficients[n][2]), (str(lines_coefficients[n][3]).split()[0], lines_coefficients[n][4])])
         lines_coefficients_formatted.append([(zero_day_date, start_point_value), (last_day_date, end_point_value)])
+
+    # end comment away sloping lines
+    """
     
     # # # # # draw horizontal lines
     
@@ -426,7 +435,7 @@ if __name__ == "__main__":
             ticker = "AAPL"
 
         # Download price data from Yahoo Finance
-        df_real = yf.download(ticker, start="2020-01-01", end="2025-06-30", auto_adjust=True)
+        df_real = yf.download(ticker, start="2020-01-01", end="2026-06-30", auto_adjust=True)
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them
         if isinstance(df_real.columns, pd.MultiIndex):
@@ -444,7 +453,7 @@ if __name__ == "__main__":
 
     try:
         # plot with mplfinance (requires: pip install mplfinance)
-        fig = mplfinance_candlestick_log(df.copy(), ticker, timeframe='monthly')
+        fig = mplfinance_candlestick_log(df.copy(), ticker, timeframe='weekly')
 
         plt.show()
         

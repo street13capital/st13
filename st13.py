@@ -57,23 +57,23 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         previous_period_value = row['Close']
     asset_standard_deviation = (squared_return_variance / (len(df_clean) - 1)) ** 0.5
 
-    # maximum number of trendlines to draw to focus on dominant lines
+    # maximum number of trendlines to prioritise not cluttering chart
     lines_to_draw = 21
         
     # window to check for local minima and maxima, must be odd number
     reversal_window = 3
 
     # constant to multiply noise_threshold for grouping of lines
-    lines_grouping_multiplier = 3
+    lines_grouping_multiplier = 2.5
 
     # threshold to consider reversal point as part of the same line
     noise_threshold = asset_standard_deviation
 
-    # list used by deprecated sloping lines algorithm
+    # list used by deprecated sloping lines algorithm section
     lines_coefficients_formatted = []
 
     """
-    # start comment away sloping lines, not reliable to do it using code
+    # start comment away sloping lines, not reliable to code it
 
     # # # # # draw sloping lines
     
@@ -197,7 +197,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         # lines_coefficients_formatted.append([(str(lines_coefficients[n][1]).split()[0], lines_coefficients[n][2]), (str(lines_coefficients[n][3]).split()[0], lines_coefficients[n][4])])
         lines_coefficients_formatted.append([(zero_day_date, start_point_value), (last_day_date, end_point_value)])
 
-    # end comment away sloping lines
+    # end comment away sloping lines, just do horizontal lines
     """
     
     # # # # # draw horizontal lines
@@ -216,7 +216,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         # maintain window size by removing oldest point
         if len(previous_points) > reversal_window:
             previous_points.pop(0)
-    
+
         # only start checking when window is populated
         if len(previous_points) >= reversal_window:
             topping_point = True
@@ -231,7 +231,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
                 topping_points.append([previous_points[starting_position][0], previous_points[starting_position][1]])
             if bottoming_point:
                 bottoming_points.append([previous_points[starting_position][0], previous_points[starting_position][1]])
-    
+
     reversal_points = topping_points + bottoming_points
     weighted_reversal_points = []
     
@@ -250,9 +250,13 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     
     for n in range(len(weighted_reversal_points)):
         reversal_clusters = []
-        # stop if there is only 1 reversal point for line
-        if weighted_reversal_points[n][1] == 1:
-            break
+
+        # might be still useful with only 1 reversal point
+        # since we are now dealing with only horizontal lines
+        # # stop if there is only 1 reversal point for line
+        # if weighted_reversal_points[n][1] == 1:
+        #    break
+
         reference_value = weighted_reversal_points[n][0]
         for m in range(len(weighted_reversal_points)):
             if (abs(reference_value - weighted_reversal_points[m][0])/reference_value) <= lines_grouping_multiplier * noise_threshold:
@@ -269,7 +273,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
             if not line_already_exists:
                 lines_coefficients.append(cluster_best_value)    
                 lines_already_drawn += 1
-    
+
         if lines_already_drawn == lines_to_draw:
             break
 

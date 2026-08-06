@@ -5,7 +5,7 @@ To install latest version of st13 Python package for trend analysis
 pip3 install st13 --upgrade
 ```
 
-To analyse a financial asset run it with the following, where SYMBOL is the asset symbol on [Yahoo Finance](https://finance.yahoo.com). If SYMBOL is not provided, MSFT will be used for demonstration, since Microsoft owns GitHub where this code lives.
+To analyse a financial asset run it with the following, where SYMBOL is the asset symbol on [Yahoo Finance](https://finance.yahoo.com). If SYMBOL is not given, MSFT will be used for demonstration, since Microsoft owns GitHub where this code lives.
 
 ```python
 python3 -m st13 SYMBOL

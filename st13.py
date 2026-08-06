@@ -316,8 +316,8 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
                        volume=False,
                        datetime_format='%Y %b',
                        xrotation=30,
-                       hlines=dict(hlines=shortlisted_lines_coefficients, colors=['orange'], linestyle='-', linewidths=1),
-                       alines=dict(alines=shortlisted_lines_coefficients_formatted, colors=['blue'], linestyle='-', linewidths=1),
+                       hlines=dict(hlines=shortlisted_lines_coefficients, colors=['blue'], linestyle='-', linewidths=1),
+                       alines=dict(alines=shortlisted_lines_coefficients_formatted, colors=['orange'], linestyle='-', linewidths=1),
                        # alines=dict(alines=[[('2020-08-30', 130),('2025-06-30', 258)], [('2020-08-30', 99),('2025-06-30', 197)]], colors=['blue'], linestyle='-', linewidths=1),
                        returnfig=True,
                        figsize=(14, 8))
@@ -388,7 +388,7 @@ def format_log_axis_custom(ax, price_range=None):
                 possible_ticks.append(tick_val)
     
     # Add some intermediate values if needed
-    for val in [1.5, 3, 6, 7, 15, 30, 60, 70, 150, 300, 700, 1500]:
+    for val in [1.5, 3, 6, 7, 15, 20, 30, 40, 60, 70, 80, 90, 100, 150, 200, 300, 400, 500, 700, 1500]:
         if ymin <= val <= ymax:
             possible_ticks.append(val)
     
@@ -439,7 +439,7 @@ if __name__ == "__main__":
             ticker = "AAPL"
 
         # Download price data from Yahoo Finance
-        df_real = yf.download(ticker, start="2020-01-01", end="2026-06-30", auto_adjust=True)
+        df_real = yf.download(ticker, start="2020-01-01", end="2026-07-31", auto_adjust=True)
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them
         if isinstance(df_real.columns, pd.MultiIndex):

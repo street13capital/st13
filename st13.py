@@ -37,7 +37,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # Resample data to weekly or monthly if requested
     if timeframe.lower() == 'weekly':
         df_clean = resample_to_weekly(df_clean)
-        title += " weekly chart"
+        title += " weekly chart - "
     elif timeframe.lower() == 'monthly':
         df_clean = resample_to_monthly(df_clean)
         title += " monthly chart"
@@ -306,13 +306,45 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # mplfinance is case-sensitive and expects specific columns
     ohlc_data = df_clean[required_cols].copy()
 
+    # Check if latest price is a break below or above key line
+    lower_line = 0
+    upper_line = 0
+    trend_bias = ''
+    latest_price = df_clean.iloc[-1]['Close']
+    for line in shortlisted_lines_coefficients:
+        if latest_price < line:
+            upper_line = line
+        else:
+            break
+    for line in reversed(shortlisted_lines_coefficients):
+        if latest_price > line:
+            lower_line = line
+        else:
+            break
+    if upper_line == 0:
+        trend_bias = 'BULLISH'
+    elif lower_line == 0:
+        trend_bias = 'BEARISH'
+    else:
+        for index, row in df_clean[::-1].iterrows():
+            if row['Close'] > upper_line:
+                trend_bias = 'BEARISH'
+                break
+            elif row['Close'] < lower_line:
+                trend_bias = 'BULLISH'
+                break
+
+    # commented off, for debugging new edge cases
+    # print(shortlisted_lines_coefficients)
+    # print(latest_price, lower_line, upper_line)
+
     # Create custom chart format, colour, style and plot chart
     mc = mpf.make_marketcolors(up='g', down='r', inherit=True)
     s = mpf.make_mpf_style(marketcolors=mc, gridstyle='-', y_on_right=False)
     fig, ax = mpf.plot(ohlc_data, 
                        type='candle',
                        style=s,
-                       title=title,
+                       title=title + trend_bias,
                        ylabel='',
                        volume=False,
                        datetime_format='%Y %b',

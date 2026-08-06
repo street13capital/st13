@@ -1,13 +1,11 @@
 # st13 📉📈
-Python package for trend analysis around key levels
-
-To install the latest version of st13 Python package
+To install the latest version of st13 Python package for trend analysis
 
 ```python
 pip3 install st13 --upgrade
 ```
 
-To see a plot of an asset run it with the following, where SYMBOL is the asset symbol on Yahoo Finance. If not provided, MSFT will be used for demonstration, since Microsoft owns GitHub.
+To see the plot of a financial asset run it with the following, where SYMBOL is the asset symbol on Yahoo Finance. If SYMBOL is not provided, MSFT will be used for demonstration, since Microsoft owns GitHub.
 
 ```python
 python3 -m st13 SYMBOL

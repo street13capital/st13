@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2025 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.7.5'
+__version__ = '0.9.1'
 
 import pandas as pd
 import yfinance as yf
@@ -469,8 +469,8 @@ if __name__ == "__main__":
             # take in asset symbol on Yahoo Finance
             ticker = sys.argv[1]
         else:
-            # default to Apple for demonstration
-            ticker = "AAPL"
+            # default to Microsoft for demonstration
+            ticker = "MSFT"
 
         # Get date of the latest Sunday for weekly chart
         today_date = date.today()

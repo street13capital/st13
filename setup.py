@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='st13',
-    version='0.7.5',
+    version='0.9.1',
     py_modules=['st13'],
     install_requires=['pandas',
                       'yfinance',
@@ -15,11 +15,11 @@ setup(
     author='Ken Soh',
     license='MIT License',
     url='https://github.com/street13capital/st13',
-    description='Python package for trend analysis using technical analysis of price behaviour around trend lines',
+    description='Python package for trend analysis',
     long_description=long_description,
     long_description_content_type='text/markdown; charset=UTF-8',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',

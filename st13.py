@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import mplfinance as mpf
 import math
 import sys
+from datetime import date, timedelta
 
 def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timeframe='daily'):
     """
@@ -316,10 +317,11 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
                        volume=False,
                        datetime_format='%Y %b',
                        xrotation=30,
-                       hlines=dict(hlines=shortlisted_lines_coefficients, colors=['blue'], linestyle='-', linewidths=1),
+                       hlines=dict(hlines=shortlisted_lines_coefficients, colors=['turquoise'], alpha=[0.5], linestyle='-', linewidths=1),
                        alines=dict(alines=shortlisted_lines_coefficients_formatted, colors=['orange'], linestyle='-', linewidths=1),
                        # alines=dict(alines=[[('2020-08-30', 130),('2025-06-30', 258)], [('2020-08-30', 99),('2025-06-30', 197)]], colors=['blue'], linestyle='-', linewidths=1),
                        returnfig=True,
+                       scale_padding={'left': 0.5, 'top': 0.5},
                        figsize=(14, 8))
     
     # Set y-axis to log scale
@@ -388,7 +390,7 @@ def format_log_axis_custom(ax, price_range=None):
                 possible_ticks.append(tick_val)
     
     # Add some intermediate values if needed
-    for val in [1.5, 3, 6, 7, 15, 20, 30, 40, 60, 70, 80, 90, 100, 150, 200, 300, 400, 500, 700, 1500]:
+    for val in [1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500]:
         if ymin <= val <= ymax:
             possible_ticks.append(val)
     
@@ -438,8 +440,15 @@ if __name__ == "__main__":
             # default to Apple for demonstration
             ticker = "AAPL"
 
+        # Get date of the latest Sunday for weekly chart
+        today_date = date.today()
+        yesterday_date = today_date - timedelta(days=1)
+        date_offset = (today_date.weekday() - 6) % 7
+        latest_sunday = today_date - timedelta(days=date_offset)
+        starting_date = latest_sunday - timedelta(days=2190)
+
         # Download price data from Yahoo Finance
-        df_real = yf.download(ticker, start="2020-01-01", end="2026-07-31", auto_adjust=True)
+        df_real = yf.download(ticker, start=starting_date.isoformat(), end=yesterday_date.isoformat(), auto_adjust=True)
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them
         if isinstance(df_real.columns, pd.MultiIndex):

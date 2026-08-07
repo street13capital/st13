@@ -497,13 +497,13 @@ if __name__ == "__main__":
         raise ValueError(f"Error downloading {ticker} price data from Yahoo Finance")
 
     try:
-        # plot with mplfinance (requires: pip install mplfinance)
+        # plot with mplfinance (requires: pip3 install mplfinance)
         fig = mplfinance_candlestick_log(df.copy(), ticker, timeframe='weekly')
 
         plt.show()
         
     except ImportError:
-        print("mplfinance not installed. Run: pip install mplfinance")
+        print("mplfinance not installed. Run: pip3 install mplfinance")
     except Exception as e:
         print(f"Error with mplfinance: {e}")
 

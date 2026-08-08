@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2026 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.9.1'
+__version__ = '0.9.2'
 
 import pandas as pd
 import yfinance as yf
@@ -310,6 +310,11 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     lower_line = 0
     upper_line = 0
     trend_bias = ''
+    key_line = 0
+
+    # sort for below to work for both up and down trend assets
+    shortlisted_lines_coefficients.sort(reverse=True)
+
     latest_price = df_clean.iloc[-1]['Close']
     for line in shortlisted_lines_coefficients:
         if latest_price < line:
@@ -323,20 +328,29 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
             break
     if upper_line == 0:
         trend_bias = 'BULLISH'
+        key_line = lower_line
     elif lower_line == 0:
         trend_bias = 'BEARISH'
+        key_line = upper_line
     else:
         for index, row in df_clean[::-1].iterrows():
             if row['Close'] > upper_line:
                 trend_bias = 'BEARISH'
+                key_line = upper_line
                 break
             elif row['Close'] < lower_line:
                 trend_bias = 'BULLISH'
+                key_line = lower_line
                 break
 
     # commented off, for debugging new edge cases
     # print(shortlisted_lines_coefficients)
     # print(latest_price, lower_line, upper_line)
+
+    # use a different strong colour for key line
+    shortlisted_lines_coefficients.index(key_line)
+    colors_list=['turquoise'] * len(shortlisted_lines_coefficients)
+    colors_list[shortlisted_lines_coefficients.index(key_line)] = 'blue'
 
     # Create custom chart format, colour, style and plot chart
     mc = mpf.make_marketcolors(up='g', down='r', inherit=True)
@@ -349,7 +363,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
                        volume=False,
                        datetime_format='%Y %b',
                        xrotation=30,
-                       hlines=dict(hlines=shortlisted_lines_coefficients, colors=['turquoise'], alpha=[0.5], linestyle='-', linewidths=1),
+                       hlines=dict(hlines=shortlisted_lines_coefficients, colors=colors_list, alpha=[0.5], linestyle='-', linewidths=1),
                        alines=dict(alines=shortlisted_lines_coefficients_formatted, colors=['orange'], linestyle='-', linewidths=1),
                        # alines=dict(alines=[[('2020-08-30', 130),('2025-06-30', 258)], [('2020-08-30', 99),('2025-06-30', 197)]], colors=['blue'], linestyle='-', linewidths=1),
                        returnfig=True,

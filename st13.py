@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2026 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 
 import pandas as pd
 import yfinance as yf

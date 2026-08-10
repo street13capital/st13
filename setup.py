@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='st13',
-    version='0.9.3',
+    version='0.9.4',
     py_modules=['st13'],
     install_requires=['pandas',
                       'yfinance',

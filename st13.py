@@ -1,11 +1,12 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2026 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.9.3'
+__version__ = '0.9.4'
 
 import pandas as pd
 import yfinance as yf
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import mplfinance as mpf
 import math
 import sys
@@ -373,7 +374,12 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # Set y-axis to log scale
     ax[0].set_yscale('log')
 
-    # Custom y-axis for better readability
+    # Disable scientific notation to avoid y-axis showing n x 10^m
+    ax[0].yaxis.set_major_formatter(mticker.ScalarFormatter())
+    ax[0].yaxis.set_minor_formatter(mticker.ScalarFormatter())
+    ax[0].ticklabel_format(style='plain', axis='y')
+
+    # Custom y-axis for better readability, remove later on if not useful
     price_range = (df_clean['Low'].min() * 0.9, df_clean['High'].max() * 1.1)
     format_log_axis_custom(ax[0], price_range)
 
@@ -458,8 +464,9 @@ def format_log_axis_custom(ax, price_range=None):
             return f'{x:.0f}'
         else:
             return f'{x:.2f}'
-    
-    ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
+   
+    # Below introduces formatting inconsistency for eg BTC-USD 
+    # ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
     
     return ax
 
@@ -486,15 +493,19 @@ if __name__ == "__main__":
             # default to Microsoft for demonstration
             ticker = "MSFT"
 
-        # Get date of the latest Sunday for weekly chart
-        today_date = date.today()
-        yesterday_date = today_date - timedelta(days=1)
-        date_offset = (today_date.weekday() - 6) % 7
-        latest_sunday = today_date - timedelta(days=date_offset)
-        starting_date = latest_sunday - timedelta(days=2190)
-
         # Download price data from Yahoo Finance
-        df_real = yf.download(ticker, start=starting_date.isoformat(), end=yesterday_date.isoformat(), auto_adjust=True)
+
+        # Get date of the latest Sunday for weekly chart
+        # today_date = date.today()
+        # yesterday_date = today_date - timedelta(days=1)
+        # date_offset = (today_date.weekday() - 6) % 7
+        # latest_sunday = today_date - timedelta(days=date_offset)
+        # starting_date = latest_sunday - timedelta(days=2190)
+        # df_real = yf.download(ticker, start=starting_date.isoformat(), end=yesterday_date.isoformat(), auto_adjust=True)
+
+        # Use period instead, not dynamic value to prevent edge errors
+        df_real = yf.download(ticker, period='6y', auto_adjust=True)
+
         # Clean the data from yfinance
         # yfinance returns MultiIndex columns, flatten them
         if isinstance(df_real.columns, pd.MultiIndex):

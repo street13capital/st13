@@ -1,4 +1,4 @@
-# st13 v0.9.4 🐉
+# st13 v0.9.5 🐉
 To install latest version of st13 Python package for trend analysis
 
 ```python

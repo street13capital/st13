@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2026 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.9.4'
+__version__ = '0.9.5'
 
 import pandas as pd
 import yfinance as yf
@@ -12,12 +12,16 @@ import math
 import sys
 from datetime import date, timedelta
 
+# flag to support running through API
+_api_mode = False
+
 def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timeframe='daily'):
     """
     Create a candlestick chart with log scale using mplfinance
     timeframe: 'daily', 'weekly', 'monthly'
     """
-    
+    global _api_mode # for running as API mode
+ 
     # Clean and prepare data for mplfinance
     df_clean = df.copy()
     
@@ -351,6 +355,9 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # print(shortlisted_lines_coefficients)
     # print(latest_price, lower_line, upper_line)
 
+    if _api_mode:
+        return trend_bias, key_line, shortlisted_lines_coefficients
+
     # use a different stronger colour for key line
     colors_list=['turquoise'] * len(shortlisted_lines_coefficients)
     colors_list[shortlisted_lines_coefficients.index(key_line)] = 'blue'
@@ -485,6 +492,18 @@ def linear_regression_line(clusters):
             best_value = reference_value
     return best_value
 
+def get_trend(ticker = 'MSFT'):
+    """API to return trend bias, current key level, and all key levels"""
+    global _api_mode; _api_mode = True # set global flag for API mode
+    df_real = yf.download(ticker, period='6y', auto_adjust=True)
+    if isinstance(df_real.columns, pd.MultiIndex):
+        df_real.columns = df_real.columns.droplevel(1)
+    df_real = df_real.rename(columns={
+        'Adj Close': 'Close'  # Use regular Close instead of Adj Close
+    })
+    df = df_real
+    return mplfinance_candlestick_log(df.copy(), ticker, timeframe='weekly')
+
 if __name__ == "__main__":
     try:
         if len(sys.argv) > 1:
@@ -525,9 +544,9 @@ if __name__ == "__main__":
     try:
         fig = mplfinance_candlestick_log(df.copy(), ticker, timeframe='weekly')
         plt.show()
-        
+
     except ImportError:
-        print("mplfinance not installed. Run: pip3 install mplfinance")
+        print("Error: mplfinance is not installed. Run: pip3 install mplfinance")
     except Exception as e:
-        print(f"Error with mplfinance: {e}")
+        print(f"Error running mplfinance: {e}")
 

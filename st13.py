@@ -43,6 +43,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
         df_clean = resample_to_monthly(df_clean)
         title += " monthly chart"
 
+    # get standard deviation for the price movement
     asset_average_return = 0
     previous_period_value = None
     for index, row in df_clean.iterrows():
@@ -50,7 +51,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
             asset_average_return += (row['Close'] - previous_period_value) / previous_period_value
         previous_period_value = row['Close']
     asset_average_return = asset_average_return / (len(df_clean) - 1)
-    
+
     squared_return_variance = 0
     previous_period_value = None
     for index, row in df_clean.iterrows():
@@ -149,7 +150,8 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     
     lines_already_drawn = 0
     lines_coefficients = []
-    
+
+    # commented off - for debuging purpose only
     # print(pd.DataFrame(weighted_reversal_points))
     for n in range(len(weighted_reversal_points)):
         # stop if there is only 2 reversal points for line
@@ -188,7 +190,8 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     
         if lines_already_drawn == lines_to_draw:
             break
-    
+
+    # commented off - for debuging purpose only    
     # print(pd.DataFrame(lines_coefficients))
     lines_coefficients_formatted = []
     for n in range(len(lines_coefficients)):
@@ -253,9 +256,9 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     for n in range(len(weighted_reversal_points)):
         reversal_clusters = []
 
-        # might be still useful with only 1 reversal point
+        # commented off, might be useful with only 1 reversal point
         # since we are now dealing with only horizontal lines
-        # # stop if there is only 1 reversal point for line
+        # stop if there is only 1 reversal point for line
         # if weighted_reversal_points[n][1] == 1:
         #    break
 
@@ -313,7 +316,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     trend_bias = ''
     key_line = 0
 
-    # sort for below to work for both up and down trend assets
+    # sort for below to work for both up/downtrend assets
     shortlisted_lines_coefficients.sort(reverse=True)
 
     latest_price = df_clean.iloc[-1]['Close']
@@ -348,8 +351,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # print(shortlisted_lines_coefficients)
     # print(latest_price, lower_line, upper_line)
 
-    # use a different strong colour for key line
-    shortlisted_lines_coefficients.index(key_line)
+    # use a different stronger colour for key line
     colors_list=['turquoise'] * len(shortlisted_lines_coefficients)
     colors_list[shortlisted_lines_coefficients.index(key_line)] = 'blue'
 
@@ -366,7 +368,6 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
                        xrotation=30,
                        hlines=dict(hlines=shortlisted_lines_coefficients, colors=colors_list, alpha=[0.5], linestyle='-', linewidths=1),
                        alines=dict(alines=shortlisted_lines_coefficients_formatted, colors=['orange'], linestyle='-', linewidths=1),
-                       # alines=dict(alines=[[('2020-08-30', 130),('2025-06-30', 258)], [('2020-08-30', 99),('2025-06-30', 197)]], colors=['blue'], linestyle='-', linewidths=1),
                        returnfig=True,
                        scale_padding={'left': 0.5, 'top': 0.5},
                        figsize=(14, 8))
@@ -379,7 +380,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     ax[0].yaxis.set_minor_formatter(mticker.ScalarFormatter())
     ax[0].ticklabel_format(style='plain', axis='y')
 
-    # Custom y-axis for better readability, remove later on if not useful
+    # Custom y-axis for better readability, remove in future if not useful
     price_range = (df_clean['Low'].min() * 0.9, df_clean['High'].max() * 1.1)
     format_log_axis_custom(ax[0], price_range)
 
@@ -465,7 +466,7 @@ def format_log_axis_custom(ax, price_range=None):
         else:
             return f'{x:.2f}'
    
-    # Below introduces formatting inconsistency for eg BTC-USD 
+    # commented off, this introduces formatting inconsistency for eg BTC-USD 
     # ax.yaxis.set_major_formatter(FuncFormatter(price_formatter))
     
     return ax
@@ -503,7 +504,7 @@ if __name__ == "__main__":
         # starting_date = latest_sunday - timedelta(days=2190)
         # df_real = yf.download(ticker, start=starting_date.isoformat(), end=yesterday_date.isoformat(), auto_adjust=True)
 
-        # Use period instead, not dynamic value to prevent edge errors
+        # Use period instead of dynamic value to prevent edge errors
         df_real = yf.download(ticker, period='6y', auto_adjust=True)
 
         # Clean the data from yfinance
@@ -522,9 +523,7 @@ if __name__ == "__main__":
         raise ValueError(f"Error downloading {ticker} price data from Yahoo Finance")
 
     try:
-        # plot with mplfinance (requires: pip3 install mplfinance)
         fig = mplfinance_candlestick_log(df.copy(), ticker, timeframe='weekly')
-
         plt.show()
         
     except ImportError:

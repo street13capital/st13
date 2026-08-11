@@ -23,14 +23,16 @@ You can invoke st13 from your Python code and use the outputs accordingly
 ```python
 >>> from st13 import get_trend
 
->>> get_trend() # if not provided, default symbol is MSFT
-('BULLISH', np.float64(491.8847961425781), [np.float64(491.8847961425781), np.float64(408.3346252441406), np.float64(368.87298583984375), np.float64(319.2364196777344), np.float64(286.9888916015625), np.float64(241.4587860107422), np.float64(218.7037811279297), np.float64(198.00904846191406)])
+>>> get_trend() # if not provided, the default symbol is MSFT
+('BULLISH', np.float64(506.05999755859375), np.float64(491.8847961425781), [np.float64(491.8847961425781), np.float64(408.3346252441406), np.float64(368.8730163574219), np.float64(319.2364196777344), np.float64(286.98883056640625), np.float64(241.458740234375), np.float64(218.7037811279297), np.float64(198.009033203125)])
 
->>> trend_bias, key_line, lines_list = get_trend('AAPL')
+>>> trend_bias, latest_price, key_line, lines_list = get_trend('AAPL')
 >>> trend_bias
 'BEARISH'
+>>> latest_price
+np.float64(308.260009765625)
 >>> key_line
-np.float64(308.9100036621094)
+np.float64(308.6438293457031)
 >>> lines_list
-[np.float64(308.9100036621094), np.float64(264.3364562988281), np.float64(217.9718017578125), np.float64(188.0437774658203), np.float64(168.74957275390625), np.float64(145.55325317382812), np.float64(121.46382141113281), np.float64(105.59131622314453)]
+[np.float64(308.6438293457031), np.float64(264.1086730957031), np.float64(217.7839813232422), np.float64(187.8817138671875), np.float64(168.6041717529297), np.float64(145.42784118652344), np.float64(121.35916900634766), np.float64(105.50035095214844)]
 ```

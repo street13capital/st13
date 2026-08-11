@@ -1,7 +1,7 @@
 """Python package for trend analysis"""
 # MIT License, Copyright 2026 Street 13 Capital Ltd
 # https://github.com/street13capital/st13/blob/main/LICENSE
-__version__ = '0.9.5'
+__version__ = '0.9.6'
 
 import pandas as pd
 import yfinance as yf
@@ -356,7 +356,7 @@ def mplfinance_candlestick_log(df, title="Candlestick Chart (log scale)", timefr
     # print(latest_price, lower_line, upper_line)
 
     if _api_mode:
-        return trend_bias, key_line, shortlisted_lines_coefficients
+        return trend_bias, latest_price, key_line, shortlisted_lines_coefficients
 
     # use a different stronger colour for key line
     colors_list=['turquoise'] * len(shortlisted_lines_coefficients)

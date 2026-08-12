@@ -37,4 +37,4 @@ np.float64(308.6438293457031)
 [np.float64(308.6438293457031), np.float64(264.1086730957031), np.float64(217.7839813232422), np.float64(187.8817138671875), np.float64(168.6041717529297), np.float64(145.42784118652344), np.float64(121.35916900634766), np.float64(105.50035095214844)]
 ```
 
-See this [LinkedIn post](https://www.linkedin.com/posts/kensoh_super-excited-to-share-an-update-on-st13-activity-7493235230267305984-xRK1) for numerous examples of how you could build trading strategies to backtest on top of this package.
+See this [LinkedIn post](https://www.linkedin.com/posts/kensoh_super-excited-to-share-an-update-on-st13-activity-7493235230267305984-xRK1) for examples of how you could build trading strategies to backtest on top of st13 package.
